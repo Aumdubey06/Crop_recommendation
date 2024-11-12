@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Recommendation</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://images.pexels.com/photos/207247/pexels-photo-207247.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); /* Replace with your image path */
+            background-size: cover; /* Ensure the image covers the entire screen */
+            background-position: center; /* Center the background */
+            background-attachment: fixed; /* Keep the background fixed during scroll */
+            color: #fff; /* White text for better readability */
+            height: 100vh; /* Full screen height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        h1 {
+            text-align: center;
+            color:black;font-size: 30px;
+            margin-bottom: 20px; /* Space between the heading and form */
+        }
+
+        form {
+            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background for the form */
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 600px; /* Max width for the form */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect for form */
+        }
+
+        label, input, select, button {
+            margin-bottom: 12px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #03d9ff;
+        }
+
+        input, select {
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #e00404;
+            width: 100%;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #4CAF50;
+            color: blue;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 50px;
+            color: #09ff00; /* Yellow color for the result text */
+        }
+
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            form {
+                padding: 15px;
+            }
+
+            button {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Crop Recommendation System</h1>
+    <form id="cropForm">
+        <label for="nitrogen">Nitrogen:</label>
+        <input type="number" id="nitrogen" name="nitrogen" required><br>
+
+        <label for="phosphorus">Phosphorus:</label>
+        <input type="number" id="phosphorus" name="phosphorus" required><br>
+
+        <label for="potassium">Potassium:</label>
+        <input type="number" id="potassium" name="potassium" required><br>
+
+        <label for="temperature">Temperature (°C):</label>
+        <input type="number" step="0.1" id="temperature" name="temperature" required><br>
+
+        <label for="humidity">Humidity (%):</label>
+        <input type="number" step="0.1" id="humidity" name="humidity" required><br>
+
+        <label for="ph">pH Level:</label>
+        <input type="number" step="0.1" id="ph" name="ph" required><br>
+
+        <label for="rainfall">Rainfall (mm):</label>
+        <input type="number" step="0.1" id="rainfall" name="rainfall" required><br>
+
+        <label for="region">Region:</label>
+        <select id="region" name="region" required>
+            <option value="Central India">Central India</option>
+            <option value="Eastern India">Eastern India</option>
+            <option value="North Eastern India">North Eastern India</option>
+            <option value="Northern India">Northern India</option>
+            <option value="Other">Other</option>
+            <option value="Western India">Western India</option>
+        </select><br>
+
+        <button type="button" onclick="getPrediction()">Predict Crop</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        function getPrediction() {
+            const formData = {
+                nitrogen: document.getElementById('nitrogen').value,
+                phosphorus: document.getElementById('phosphorus').value,
+                potassium: document.getElementById('potassium').value,
+                temperature: document.getElementById('temperature').value,
+                humidity: document.getElementById('humidity').value,
+                ph: document.getElementById('ph').value,
+                rainfall: document.getElementById('rainfall').value,
+                region: document.getElementById('region').value
+            };
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.crop_recommendation) {
+                    document.getElementById('result').innerText = "Recommended Crop: " + data.crop_recommendation;
+                } else {
+                    document.getElementById('result').innerText = "Error: " + data.error;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerText = "An error occurred. Please try again.";
+            });
+        }
+    </script>
+</body>
+</html>
